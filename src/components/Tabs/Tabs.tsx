@@ -72,13 +72,29 @@ export const TabsComponent: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
 
+  const [inputError, setInputError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) =>
     setValue(newValue);
 
-  const handleInputTimeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+  const handleInputTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setInputTime(event.target.value);
 
+    if (inputError) {
+      setInputError(false);
+      setErrorMessage("");
+    }
+  };
+
   const calculateRoshanTimes = (): void => {
+    if (!validateTimeInput(inputTime)) {
+      console.error("Validation failed. Correct your input.");
+      return;
+    }
+
     let strValue = inputTime.toString();
 
     let normalizedTime = strValue
@@ -114,6 +130,26 @@ export const TabsComponent: React.FC = () => {
       latest: calculatedTimes.latest,
       glyph: `${minutes + 5}:${seconds.toString().padStart(2, "0")}`,
     });
+  };
+
+  const validateTimeInput = (input: any) => {
+    if (!input.trim()) {
+      setInputError(true);
+      setErrorMessage("Field cannot be empty.");
+      return false;
+    }
+
+    const isValidFormat = /^(?:[0-5]?\d[-:][0-5]\d|([0-5]?\d){2})$/.test(input);
+    if (!isValidFormat) {
+      setInputError(true);
+      setErrorMessage("Enter a valid time (MM:SS, MMSS, or MM:SS).");
+      return false;
+    }
+
+    // Clear any previous error state if the input is now valid
+    setInputError(false);
+    setErrorMessage("");
+    return true;
   };
 
   const copyToClipboard = (text: string) => {
@@ -160,7 +196,8 @@ export const TabsComponent: React.FC = () => {
         <TextField
           fullWidth
           label="Current timer"
-          helperText="Format: MM:SS, MMSS, MM-SS"
+          helperText={inputError ? errorMessage : "Format: MM:SS, MMSS, MM-SS"}
+          error={inputError}
           variant="outlined"
           value={inputTime}
           onChange={handleInputTimeChange}
@@ -240,7 +277,8 @@ export const TabsComponent: React.FC = () => {
         <TextField
           fullWidth
           label="Current timer"
-          helperText="Format: MM:SS, MMSS, MM-SS"
+          helperText={inputError ? errorMessage : "Format: MM:SS, MMSS, MM-SS"}
+          error={inputError}
           variant="outlined"
           value={inputTime}
           onChange={handleInputTimeChange}
