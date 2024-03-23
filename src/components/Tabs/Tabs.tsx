@@ -136,10 +136,12 @@ export const TabsComponent: React.FC = () => {
       <CustomTabPanel value={value} index={0}>
         <TextField
           fullWidth
-          label="Current timer (HH:MM)"
+          label="Current timer"
+          helperText="Format: MM:SS, MMSS, MM-SS"
           variant="outlined"
           value={inputTime}
           onChange={handleInputTimeChange}
+          FormHelperTextProps={{ style: { marginLeft: "2px" } }}
         />
         <ButtonWrapper>
           <Button
@@ -206,10 +208,12 @@ export const TabsComponent: React.FC = () => {
       <CustomTabPanel value={value} index={1}>
         <TextField
           fullWidth
-          label="Current timer (HH:MM)"
+          label="Current timer"
+          helperText="Format: MM:SS, MMSS, MM-SS"
           variant="outlined"
           value={inputTime}
           onChange={handleInputTimeChange}
+          FormHelperTextProps={{ style: { marginLeft: "2px" } }}
         />
         <ButtonWrapper>
           <Button
