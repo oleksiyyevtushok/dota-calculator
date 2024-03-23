@@ -1,5 +1,6 @@
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import {
+  Alert,
   Box,
   Button,
   List,
@@ -10,9 +11,8 @@ import {
   Tab,
   Tabs,
   TextField,
-  Typography,
-  Alert,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 
@@ -158,7 +158,7 @@ export const TabsComponent: React.FC = () => {
   ) => {
     if (!input.trim()) {
       setError(true);
-      setErrorMessage("Field cannot be empty.");
+      setErrorMessage("Enter a valid time (MMSS).");
       return false;
     }
 
@@ -218,7 +218,11 @@ export const TabsComponent: React.FC = () => {
       <CustomTabPanel value={value} index={0}>
         <TextField
           fullWidth
-          type="number"
+          type="tel"
+          inputProps={{
+            inputMode: "numeric",
+            pattern: "[0-9]*",
+          }}
           label="Current timer"
           helperText={
             roshanError ? roshanErrorMessage : "Format: MMSS | Example: 4412"
@@ -302,7 +306,15 @@ export const TabsComponent: React.FC = () => {
       <CustomTabPanel value={value} index={1}>
         <TextField
           fullWidth
-          type="number"
+          type="tel"
+          onKeyPress={(event) => {
+            if (!/[0-9]/.test(event.key)) {
+              event.preventDefault();
+            }
+          }}
+          inputProps={{
+            pattern: "[0-9]*",
+          }}
           label="Current timer"
           helperText={
             glyphError ? glyphErrorMessage : "Format: MMSS | Example: 4412"
