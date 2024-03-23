@@ -162,10 +162,11 @@ export const TabsComponent: React.FC = () => {
       return false;
     }
 
-    const isValidFormat = /^(?:[0-5]?\d[-:][0-5]\d|([0-5]?\d){2})$/.test(input);
+    const isValidFormat = /^(1[0-1][0-9]|[0-9]{1,2})[0-5]\d$/.test(input);
+
     if (!isValidFormat) {
       setError(true);
-      setErrorMessage("Enter a valid time (MM:SS, MMSS, or MM:SS).");
+      setErrorMessage("Enter a valid time (MMSS).");
       return false;
     }
 
@@ -217,9 +218,10 @@ export const TabsComponent: React.FC = () => {
       <CustomTabPanel value={value} index={0}>
         <TextField
           fullWidth
+          type="number"
           label="Current timer"
           helperText={
-            roshanError ? roshanErrorMessage : "Format: MM:SS, MMSS, MM-SS"
+            roshanError ? roshanErrorMessage : "Format: MMSS | Example: 4412"
           }
           error={roshanError}
           variant="outlined"
@@ -300,9 +302,10 @@ export const TabsComponent: React.FC = () => {
       <CustomTabPanel value={value} index={1}>
         <TextField
           fullWidth
+          type="number"
           label="Current timer"
           helperText={
-            glyphError ? glyphErrorMessage : "Format: MM:SS, MMSS, MM-SS"
+            glyphError ? glyphErrorMessage : "Format: MMSS | Example: 4412"
           }
           error={glyphError}
           variant="outlined"
