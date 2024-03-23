@@ -63,7 +63,10 @@ const ButtonWrapper = styled("div")({
 
 export const TabsComponent: React.FC = () => {
   const [value, setValue] = useState(0);
-  const [inputTime, setInputTime] = useState("");
+
+  const [roshanTime, setRoshanTime] = useState("");
+  const [glyphTime, setGlyphTime] = useState("");
+
   const [calculatedTimes, setCalculatedTimes] = useState<{
     early?: string;
     latest?: string;
@@ -72,30 +75,41 @@ export const TabsComponent: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
 
-  const [inputError, setInputError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [roshanError, setRoshanError] = useState(false);
+  const [glyphError, setGlyphError] = useState(false);
+  const [roshanErrorMessage, setRoshanErrorMessage] = useState("");
+  const [glyphErrorMessage, setGlyphErrorMessage] = useState("");
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) =>
     setValue(newValue);
 
-  const handleInputTimeChange = (
+  const handleRoshanTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setInputTime(event.target.value);
+    setRoshanTime(event.target.value);
+    if (roshanError) {
+      setRoshanError(false);
+      setRoshanErrorMessage("");
+    }
+  };
 
-    if (inputError) {
-      setInputError(false);
-      setErrorMessage("");
+  const handleGlyphTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setGlyphTime(event.target.value);
+    if (glyphError) {
+      setGlyphError(false);
+      setGlyphErrorMessage("");
     }
   };
 
   const calculateRoshanTimes = (): void => {
-    if (!validateTimeInput(inputTime)) {
-      console.error("Validation failed. Correct your input.");
+    if (!validateTimeInput(roshanTime, setRoshanError, setRoshanErrorMessage)) {
+      console.error("Roshan Validation failed. Correct your input.");
       return;
     }
 
-    let strValue = inputTime.toString();
+    let strValue = roshanTime.toString();
 
     let normalizedTime = strValue
       .replace(/(\d{2})(\d{2})$/, "$1:$2")
@@ -114,7 +128,12 @@ export const TabsComponent: React.FC = () => {
   };
 
   const calculateGlyphTime = () => {
-    let strValue = inputTime.toString();
+    if (!validateTimeInput(glyphTime, setGlyphError, setGlyphErrorMessage)) {
+      console.error("Glyph Validation failed. Correct your input.");
+      return;
+    }
+
+    let strValue = glyphTime.toString();
 
     let normalizedTime = strValue
       .replace(/(\d{2})(\d{2})$/, "$1:$2")
@@ -132,22 +151,25 @@ export const TabsComponent: React.FC = () => {
     });
   };
 
-  const validateTimeInput = (input: any) => {
+  const validateTimeInput = (
+    input: any,
+    setError: any,
+    setErrorMessage: any
+  ) => {
     if (!input.trim()) {
-      setInputError(true);
+      setError(true);
       setErrorMessage("Field cannot be empty.");
       return false;
     }
 
     const isValidFormat = /^(?:[0-5]?\d[-:][0-5]\d|([0-5]?\d){2})$/.test(input);
     if (!isValidFormat) {
-      setInputError(true);
+      setError(true);
       setErrorMessage("Enter a valid time (MM:SS, MMSS, or MM:SS).");
       return false;
     }
 
-    // Clear any previous error state if the input is now valid
-    setInputError(false);
+    setError(false);
     setErrorMessage("");
     return true;
   };
@@ -196,11 +218,13 @@ export const TabsComponent: React.FC = () => {
         <TextField
           fullWidth
           label="Current timer"
-          helperText={inputError ? errorMessage : "Format: MM:SS, MMSS, MM-SS"}
-          error={inputError}
+          helperText={
+            roshanError ? roshanErrorMessage : "Format: MM:SS, MMSS, MM-SS"
+          }
+          error={roshanError}
           variant="outlined"
-          value={inputTime}
-          onChange={handleInputTimeChange}
+          value={roshanTime}
+          onChange={handleRoshanTimeChange}
           FormHelperTextProps={{ style: { marginLeft: "2px" } }}
         />
         <ButtonWrapper>
@@ -277,11 +301,13 @@ export const TabsComponent: React.FC = () => {
         <TextField
           fullWidth
           label="Current timer"
-          helperText={inputError ? errorMessage : "Format: MM:SS, MMSS, MM-SS"}
-          error={inputError}
+          helperText={
+            glyphError ? glyphErrorMessage : "Format: MM:SS, MMSS, MM-SS"
+          }
+          error={glyphError}
           variant="outlined"
-          value={inputTime}
-          onChange={handleInputTimeChange}
+          value={glyphTime}
+          onChange={handleGlyphTimeChange}
           FormHelperTextProps={{ style: { marginLeft: "2px" } }}
         />
         <ButtonWrapper>
