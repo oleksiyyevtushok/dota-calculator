@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/dota-calculator/static/js/main.dd48c66e.js",
+    "index.html": "/dota-calculator/index.html",
+    "main.dd48c66e.js.map": "/dota-calculator/static/js/main.dd48c66e.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.dd48c66e.js"
+  ]
+}
