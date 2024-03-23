@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import ContentCopy from "@mui/icons-material/ContentCopy";
 import {
   Box,
-  Tab,
-  Tabs,
-  Typography,
-  TextField,
   Button,
-  Paper,
-  styled,
-  Grid,
   List,
   ListItem,
   ListItemText,
-  ListSubheader,
+  Paper,
+  styled,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+  Alert,
+  Tooltip,
 } from "@mui/material";
-import ContentCopy from "@mui/icons-material/ContentCopy";
+import React, { useState } from "react";
 
 const CustomTabPanel: React.FC<{
   children: React.ReactNode;
@@ -38,7 +38,7 @@ const CustomTabPanel: React.FC<{
 
 const StyledTabs = styled(Tabs)({
   borderBottom: "1px solid #e8e8e8",
-  "& .MuiTabs-indicator": { backgroundColor: "#1890ff" },
+  "& .MuiTabs-indicator": { backgroundColor: "#222B38" },
 });
 const StyledTab = styled(Tab)({ textTransform: "none", fontWeight: "bold" });
 
@@ -70,6 +70,7 @@ export const TabsComponent: React.FC = () => {
     glyph?: string;
   }>({});
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) =>
     setValue(newValue);
@@ -118,13 +119,35 @@ export const TabsComponent: React.FC = () => {
   const copyToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)
-      .then(() => setSelectedItem(text))
+      .then(() => {
+        setSelectedItem(text);
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+          setSelectedItem(null);
+        }, 1000);
+      })
       .catch(console.error);
-    setTimeout(() => setSelectedItem(null), 2000); // Reset highlight after 2 seconds
   };
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 16, // Position it 16px above the bottom of the Paper
+          left: "50%", // Center it horizontally
+          transform: "translateX(-50%)", // Adjust for exact centering
+          transition: "opacity 0.5s, visibility 0.5s",
+          opacity: isCopied ? 1 : 0,
+          visibility: isCopied ? "visible" : "hidden",
+          zIndex: 1000, // Ensure it's above all other content
+        }}
+      >
+        <Alert severity="success" sx={{ margin: 2 }}>
+          Text copied to clipboard!
+        </Alert>
+      </Box>
       <StyledTabs
         value={value}
         onChange={handleChange}
@@ -155,53 +178,61 @@ export const TabsComponent: React.FC = () => {
         </ButtonWrapper>
         <List sx={{ marginTop: 2 }}>
           {calculatedTimes.early && (
-            <InteractiveListItem
-              onClick={() =>
-                copyToClipboard(`Early time: ${calculatedTimes.early}`)
-              }
-              selected={selectedItem === `Early time: ${calculatedTimes.early}`}
-            >
-              <ListItemText
-                primary="Earliest respawn time"
-                secondary={calculatedTimes.early}
-              />
-              <ContentCopy />
-            </InteractiveListItem>
+            <Tooltip title="Copy">
+              <InteractiveListItem
+                onClick={() =>
+                  copyToClipboard(`Early time: ${calculatedTimes.early}`)
+                }
+                selected={
+                  selectedItem === `Early time: ${calculatedTimes.early}`
+                }
+              >
+                <ListItemText
+                  primary="Earliest respawn time"
+                  secondary={calculatedTimes.early}
+                />
+                <ContentCopy />
+              </InteractiveListItem>
+            </Tooltip>
           )}
           {calculatedTimes.latest && (
-            <InteractiveListItem
-              onClick={() =>
-                copyToClipboard(`Latest time: ${calculatedTimes.latest}`)
-              }
-              selected={
-                selectedItem === `Latest time: ${calculatedTimes.latest}`
-              }
-            >
-              <ListItemText
-                primary="Latest respawn time"
-                secondary={calculatedTimes.latest}
-              />
-              <ContentCopy />
-            </InteractiveListItem>
+            <Tooltip title="Copy">
+              <InteractiveListItem
+                onClick={() =>
+                  copyToClipboard(`Latest time: ${calculatedTimes.latest}`)
+                }
+                selected={
+                  selectedItem === `Latest time: ${calculatedTimes.latest}`
+                }
+              >
+                <ListItemText
+                  primary="Latest respawn time"
+                  secondary={calculatedTimes.latest}
+                />
+                <ContentCopy />
+              </InteractiveListItem>
+            </Tooltip>
           )}
           {calculatedTimes.early && calculatedTimes.latest && (
-            <InteractiveListItem
-              onClick={() =>
-                copyToClipboard(
+            <Tooltip title="Copy">
+              <InteractiveListItem
+                onClick={() =>
+                  copyToClipboard(
+                    `Rosh respawn: ${calculatedTimes.early}-${calculatedTimes.latest}`
+                  )
+                }
+                selected={
+                  selectedItem ===
                   `Rosh respawn: ${calculatedTimes.early}-${calculatedTimes.latest}`
-                )
-              }
-              selected={
-                selectedItem ===
-                `Rosh respawn: ${calculatedTimes.early}-${calculatedTimes.latest}`
-              }
-            >
-              <ListItemText
-                primary="Respawn range"
-                secondary={`${calculatedTimes.early} - ${calculatedTimes.latest}`}
-              />
-              <ContentCopy />
-            </InteractiveListItem>
+                }
+              >
+                <ListItemText
+                  primary="Respawn range"
+                  secondary={`${calculatedTimes.early} - ${calculatedTimes.latest}`}
+                />
+                <ContentCopy />
+              </InteractiveListItem>
+            </Tooltip>
           )}
         </List>
       </CustomTabPanel>
@@ -227,18 +258,22 @@ export const TabsComponent: React.FC = () => {
         </ButtonWrapper>
         {calculatedTimes.glyph && (
           <List sx={{ marginTop: 2 }}>
-            <InteractiveListItem
-              onClick={() =>
-                copyToClipboard(`Glyph time: ${calculatedTimes.glyph}`)
-              }
-              selected={selectedItem === `Glyph time: ${calculatedTimes.glyph}`}
-            >
-              <ListItemText
-                primary="Glyph time"
-                secondary={calculatedTimes.glyph}
-              />
-              <ContentCopy />
-            </InteractiveListItem>
+            <Tooltip title="Copy">
+              <InteractiveListItem
+                onClick={() =>
+                  copyToClipboard(`Glyph time: ${calculatedTimes.glyph}`)
+                }
+                selected={
+                  selectedItem === `Glyph time: ${calculatedTimes.glyph}`
+                }
+              >
+                <ListItemText
+                  primary="Glyph time"
+                  secondary={calculatedTimes.glyph}
+                />
+                <ContentCopy />
+              </InteractiveListItem>
+            </Tooltip>
           </List>
         )}
       </CustomTabPanel>
